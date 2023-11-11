@@ -1,38 +1,37 @@
-import { DBService } from "./../db/db.service";
+import { DBService } from "../db/db.service";
 import { FileParser } from "./fileParser.service";
 import fs from "fs";
 import readline from "readline";
 
-export class CSVParser implements FileParser {
+export class JSONParser implements FileParser {
   private readonly dbService: DBService;
   constructor(dbService: DBService) {
     this.dbService = dbService;
   }
 
   async process(path: string): Promise<void> {
-    console.log("Starting to process CSV");
+    console.log("Starting to process JSON");
 
     const readLineStream = this.createReadLineStream(path);
-    await this.skipFirstLine(readLineStream);
     await this.processFile(readLineStream);
 
-    console.log("CSV processing completed");
-  }
-
-  private async skipFirstLine(
-    readLineStream: readline.Interface
-  ): Promise<void> {
-    await readLineStream[Symbol.asyncIterator]().next();
+    console.log("JSON processing completed");
   }
 
   private async processFile(readLineStream: readline.Interface): Promise<void> {
+
     for await (const line of readLineStream) {
-      const elements = line.split(";");
-      const name = elements[0];
-      const area = parseInt(elements[1]);
-      const population = parseInt(elements[2]);
+      console.log(line.trim())
+      // if(line.trim() === '[' || line.trim() === ']'){
+      //   continue;
+      // }
+      // console.log("Line: " + JSON.parse(line))
+      // const elements = line.split(";");
+      // const name = elements[0];
+      // const area = parseInt(elements[1]);
+      // const population = parseInt(elements[2]);
       //to do add density field
-      await this.dbService.save({ name, area, population });
+      // await this.dbService.save();
     }
   }
 
