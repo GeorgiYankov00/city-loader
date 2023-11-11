@@ -5,8 +5,7 @@ import mongoose from "mongoose";
 export class MongoDBService implements DBService {
   constructor() {}
 
-  //to do add type
-  async save(input: City): Promise<any> {
+  async save(input: City): Promise<City> {
     console.log("Saving city in DB");
     const city = await new CityModel(input);
     let result;
@@ -16,6 +15,10 @@ export class MongoDBService implements DBService {
     } catch (err: any) {
       console.error("Unable to save city. Error:", err.message);
     }
+    if (!result) {
+      throw Error("Unable to get response from DB. Payload: " + city);
+    }
+
     return result;
   }
 
