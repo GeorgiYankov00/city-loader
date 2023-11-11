@@ -1,21 +1,29 @@
-import { DBService } from "./db/db.service";
-import { MongoDBService } from "./db/mongoDB.service";
-import { CSVParser } from "./services/csvParser.service";
-import { FileParser } from "./services/fileParser.service";
-import { JSONParser } from "./services/jsonParser.service";
+import { DBService } from "./services/db/db.service";
+import { MongoDBService } from "./services/db/mongoDB.service";
+import { CSVParser } from "./services/parsers/csvParser.service";
+import { FileParser } from "./services/parsers/fileParser.service";
+import { JSONParser } from "./services/parsers/jsonParser.service";
+import "dotenv/config";
 
 async function main() {
   const dbService: DBService = new MongoDBService();
+
   await dbService.connect();
+
   const csvParser: FileParser = new CSVParser(dbService);
   const jsonParser: FileParser = new JSONParser(dbService);
- 
-  // await csvParser.process("src/input/test.json");
-  await jsonParser.process("src/input/test.json");
+
+  await Promise.allSettled([
+    csvParser.process("src/input/test.csv"),
+    jsonParser.process("src/input/test.json"),
+  ]);
+
+  //to do add log report
+
   process.exit(0);
 }
-//to do add dotenv for mongodb url
+
 //to do add test case if file is not structured - CSV/JSON
 //to do README
-//to
+//test index optimization for sort
 main();

@@ -1,10 +1,9 @@
-import { CityModel } from "./../model/city";
-import { City } from "../utils/types/City";
+import { CityModel } from "../../model/city";
+import { City } from "../../utils/types/City";
 import { DBService } from "./db.service";
 import mongoose from "mongoose";
 export class MongoDBService implements DBService {
-  constructor() {
-  }
+  constructor() {}
 
   //to do add type
   async save(input: City): Promise<any> {
@@ -14,16 +13,17 @@ export class MongoDBService implements DBService {
     try {
       result = await city.save();
       console.log("City saved successfully:");
-    } catch (err) {
-      console.error("Unable to save city. Error:", err);
+    } catch (err: any) {
+      console.error("Unable to save city. Error:", err.message);
     }
-
     return result;
   }
 
   async connect() {
-    //to do move to env
-    await mongoose.connect("mongodb://localhost:27017");
+    if (!process.env.DB_URL) {
+      throw new Error("DB Connection String undefined!");
+    }
+    await mongoose.connect(process.env.DB_URL);
     console.log("Successfully connected to MongoDB");
   }
 }

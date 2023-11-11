@@ -1,7 +1,9 @@
-import { DBService } from "./../db/db.service";
 import { FileParser } from "./fileParser.service";
 import fs from "fs";
 import readline from "readline";
+import { DBService } from "../db/db.service";
+import { calculateDensity } from "../../utils/densityCalculator.function";
+import { createReadLineStream } from "../../utils/readLineStreamCreator.function";
 
 export class CSVParser implements FileParser {
   private readonly dbService: DBService;
@@ -12,9 +14,13 @@ export class CSVParser implements FileParser {
   async process(path: string): Promise<void> {
     console.log("Starting to process CSV");
 
-    const readLineStream = this.createReadLineStream(path);
-    await this.skipFirstLine(readLineStream);
-    await this.processFile(readLineStream);
+    try {
+      const readLineStream = createReadLineStream(path);
+      await this.skipFirstLine(readLineStream);
+      await this.processFile(readLineStream);
+    } catch (err: any) {
+      console.log("Unable to parse CSV file. Error: " + err.message);
+    }
 
     console.log("CSV processing completed");
   }
@@ -29,18 +35,11 @@ export class CSVParser implements FileParser {
     for await (const line of readLineStream) {
       const elements = line.split(";");
       const name = elements[0];
-      const area = parseInt(elements[1]);
-      const population = parseInt(elements[2]);
-      //to do add density field
-      await this.dbService.save({ name, area, population });
+      const area = parseFloat(elements[1]);
+      const population = parseFloat(elements[2]);
+      const density = calculateDensity(area, population);
+
+      await this.dbService.save({ name, area, population, density });
     }
-  }
-
-  private createReadLineStream(path: string): readline.Interface {
-    const fileStream = fs.createReadStream(path);
-
-    return readline.createInterface({
-      input: fileStream,
-    });
   }
 }

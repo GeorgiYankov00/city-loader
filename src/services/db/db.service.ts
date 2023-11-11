@@ -1,4 +1,4 @@
-import { City } from "../utils/types/City";
+import { City } from "../../utils/types/City";
 
 export interface DBService {
   //to do type for model
