@@ -18,12 +18,7 @@ async function main() {
     jsonParser.process("src/input/test.json"),
   ]);
 
-  //to do add log report
-
   process.exit(0);
 }
 
-//to do add test case if file is not structured - CSV/JSON
-//to do README
-//test index optimization for sort
 main();
