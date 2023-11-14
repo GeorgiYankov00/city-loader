@@ -3,22 +3,20 @@ import { City } from "../../utils/types/City";
 import { DBService } from "./db.service";
 import mongoose from "mongoose";
 export class MongoDBService implements DBService {
-  constructor() {}
+  constructor() {
+    this.connect();
+  }
 
   async save(input: City): Promise<City> {
     console.log("Saving city in DB");
     const city = await new CityModel(input);
     let result;
-    try {
-      result = await city.save();
-      console.log("City saved successfully:");
-    } catch (err: any) {
-      console.error("Unable to save city. Error:", err.message);
-    }
+    result = await city.save();
+
     if (!result) {
       throw Error("Unable to get response from DB. Payload: " + city);
     }
-
+    console.log("City saved successfully:");
     return result;
   }
 

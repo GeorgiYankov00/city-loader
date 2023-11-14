@@ -8,14 +8,11 @@ import "dotenv/config";
 async function main() {
   const dbService: DBService = new MongoDBService();
 
-  await dbService.connect();
-
   const csvParser: FileParser = new CSVParser(dbService);
   const jsonParser: FileParser = new JSONParser(dbService);
-
   await Promise.allSettled([
-    csvParser.process("src/input/test.csv"),
-    jsonParser.process("src/input/test.json"),
+    csvParser.process("src/input/cities.csv"),
+    jsonParser.process("src/input/cities.json"),
   ]);
 
   process.exit(0);
